@@ -1,6 +1,31 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import { connect } from 'react-redux';
+import { fetchQuiz, selectAnswer, postAnswer, setMessage } from '../state/action-creators';
 
-export default function Quiz(props) {
+export function Quiz(props) {
+
+  const { quiz, selectedAnswer, fetchQuiz, selectAnswer, setMessage } = props;
+
+  const handleSubmit = e => {
+    e.preventDefault();
+    postAnswer(quiz.quiz_id, selectedAnswer);
+  };
+
+  const handleSelection = e => {
+    setMessage('');
+    selectedAnswer(e.target.id);
+  }
+
+  useEffect(() => {
+    if(!quiz) fetchQuiz();
+  }, []);
+
+  const checkIfSelected = idx => {
+    if(selectedAnswer === quiz.answers[idx].answer_id) return true;
+    return false;
+  }
+
+
   return (
     <div id="wrapper">
       {
@@ -25,7 +50,7 @@ export default function Quiz(props) {
               </div>
             </div>
 
-            <button id="submitAnswerBtn">Submit answer</button>
+            <button id="submitAnswerBtn" onClick={handleSubmit} disabled={selectedAnswer === null ? true: false}>Submit answer</button>
           </>
         ) : 'Loading next quiz...'
       }
